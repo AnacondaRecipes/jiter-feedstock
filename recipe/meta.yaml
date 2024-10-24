@@ -12,13 +12,14 @@ source:
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
+  missing_dso_whitelist:  # [s390x]
+    - "$RPATH/ld64.so.1"  # [s390x]
 
 requirements:
   build:
-    - python                                 # [build_platform != target_platform]
+    - python
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - {{ compiler('c') }}
-    - {{ stdlib("c") }}
     - {{ compiler('rust') }}
     - maturin
     - cargo-bundle-licenses
@@ -40,8 +41,12 @@ test:
 about:
   home: https://crates.io/crates/jiter
   summary: Fast iterable JSON parser.
+  description: Fast iterable JSON parser.
   license: MIT
   license_file: crates/jiter/LICENSE
+  license_family: MIT
+  doc_url: https://docs.rs/jiter/latest/jiter/
+  dev_url: https://github.com/pydantic/jiter
 
 extra:
   recipe-maintainers:
