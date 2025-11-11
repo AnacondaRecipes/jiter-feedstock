@@ -1,31 +1,28 @@
 {% set name = "jiter" %}
-{% set version = "0.6.1" %}
+{% set version = "0.12.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/jiter-{{ version }}.tar.gz
-  sha256: e19cd21221fc139fb032e4112986656cb2739e9fe6d84c13956ab30ccc7d4449
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 64dfcd7d5c168b38d3f9f8bba7fc639edb3418abcc74f22fdbe6b8938293f30b
 
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
   number: 0
-  missing_dso_whitelist:  # [s390x]
-    - "$RPATH/ld64.so.1"  # [s390x]
+  skip: true  # [py<39]
 
 requirements:
   build:
-    - python
-    - cross-python_{{ target_platform }}     # [build_platform != target_platform]
+    - {{ stdlib('c') }}
     - {{ compiler('c') }}
     - {{ compiler('rust') }}
-    - maturin
     - cargo-bundle-licenses
   host:
     - python
-    - maturin >=1,<2
+    - maturin >=1.9.4,<2
     - pip
   run:
     - python
@@ -33,19 +30,23 @@ requirements:
 test:
   imports:
     - jiter
-  commands:
-    - pip check
   requires:
     - pip
+  commands:
+    - pip check
+    - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
 
 about:
   home: https://crates.io/crates/jiter
   summary: Fast iterable JSON parser.
   description: Fast iterable JSON parser.
   license: MIT
-  license_file: crates/jiter/LICENSE
+  license_file:
+    - LICENSE
+    - crates/jiter-python/LICENSE
+    - crates/jiter/LICENSE
   license_family: MIT
-  doc_url: https://docs.rs/jiter/latest/jiter/
+  doc_url: https://docs.rs/jiter/latest/jiter
   dev_url: https://github.com/pydantic/jiter
 
 extra:
