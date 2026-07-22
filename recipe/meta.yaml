@@ -1,13 +1,13 @@
 {% set name = "jiter" %}
-{% set version = "0.12.0" %}
+{% set version = "0.16.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 64dfcd7d5c168b38d3f9f8bba7fc639edb3418abcc74f22fdbe6b8938293f30b
+  sha256: 7b24c3492c5f4f84a37946ad9cf504910cf6a782d6a4e0689b6673c5894b4a1c
 
 build:
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
@@ -28,13 +28,19 @@ requirements:
     - python
 
 test:
+  source_files:
+    - crates/jiter-python/tests
+    - crates/jiter/benches
   imports:
     - jiter
   requires:
     - pip
+    - pytest
+    - dirty-equals
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -vv crates/jiter-python/tests
 
 about:
   home: https://crates.io/crates/jiter
@@ -52,3 +58,5 @@ about:
 extra:
   recipe-maintainers:
     - jan-janssen
+  skip-lints:
+    - reachable_url
