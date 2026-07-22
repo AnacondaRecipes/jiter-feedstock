@@ -2,7 +2,7 @@
 {% set version = "0.16.0" %}
 
 package:
-  name: {{ name|lower }}
+  name: {{ name }}
   version: {{ version }}
 
 source:
@@ -28,13 +28,19 @@ requirements:
     - python
 
 test:
+  source_files:
+    - crates/jiter-python/tests
+    - crates/jiter/benches
   imports:
     - jiter
   requires:
     - pip
+    - pytest
+    - dirty-equals
   commands:
     - pip check
     - python -c "from importlib.metadata import version; assert(version('{{ name }}')=='{{ version }}')"
+    - pytest -vv crates/jiter-python/tests
 
 about:
   home: https://crates.io/crates/jiter
